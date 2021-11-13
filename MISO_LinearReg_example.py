@@ -70,7 +70,11 @@ x2 = numpy.reshape(yv, len(yv)**2)
 input = numpy.array([x1,x2])
 t = numpy.reshape(tnew, len(tnew)**2)
 
+# coll = numpy.array([x1,x2,t])
+# scoll = numpy.random.shuffle(coll)
+# print(coll[0:3,:], type(coll))
+
 print(80*"-")
 print("Training process started!\n")
 
-train(NN,input,t,1000)
+train(NN,input,t,2000)
