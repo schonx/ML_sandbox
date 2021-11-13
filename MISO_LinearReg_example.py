@@ -23,6 +23,12 @@ class FelixNet:
 
         return numpy.matmul(self._weights, x) + self._bias
 
+    def eval(self,x,t):
+
+        p = numpy.matmul(self._weights, x) + self._bias
+        e = mse(p,t)
+        print(f"Error is {e}.")
+        return
 # -----------------------------------------------------------------------------
 # functions
 
@@ -54,27 +60,41 @@ def train(NN,x,t,epochs):
 
 
 # # -----------------------------------------------------------------------------
-# # intialization
-#
+# intialization
 NN = FelixNet(2)
 print(f"Initial weights: {NN.wb[0]} | initial bias: {NN.wb[1]}")
+
 # make a grid
 xnew1 = numpy.linspace(0,5,21)
 xnew2 = numpy.linspace(0,5,21)
 xv,yv = numpy.meshgrid(xnew1,xnew2)
 # evaluate a linear function on that grid
 tnew = 5*xv + 3*yv +2
+
 # transform data into 1-d arrays
 x1 = numpy.reshape(xv, len(xv)**2)
 x2 = numpy.reshape(yv, len(yv)**2)
 input = numpy.array([x1,x2])
 t = numpy.reshape(tnew, len(tnew)**2)
 
-# coll = numpy.array([x1,x2,t])
-# scoll = numpy.random.shuffle(coll)
-# print(coll[0:3,:], type(coll))
+# shuffle data
+rng = numpy.random.default_rng()
+collector = numpy.array([x1,x2,t])
+rng.shuffle(collector, axis=1)
 
-print(80*"-")
+# separate training (2/3) and test (1/3) data
+n = numpy.shape(collector)[1]
+train_data = collector[:,:int(2/3*n)]
+test_data = collector[:,int(2/3*n):]
+train_x1, train_x2, train_t = train_data
+test_x1, test_x2, test_t = test_data
+
+# training process
+print(80*"--")
 print("Training process started!\n")
+train(NN,numpy.array([train_x1,train_x2]),train_t,2000)
 
-train(NN,input,t,2000)
+# test against test_data
+print(80*"--")
+print("Evaluation on test data:\n")
+NN.eval(numpy.array([test_x1,test_x2]),test_t)
