@@ -8,11 +8,11 @@ class FelixNet:
         self._bias = numpy.random.rand(1)
 
     @property
-    def wb(self):
+    def wb(self): # getter fun
         return (self._weights, self._bias)
 
     @wb.setter
-    def wb(self, weights, bias):
+    def wb(self, weights, bias): # setter fun
         try:
             self._weights[:] = weights
             self._bias = bias
@@ -30,59 +30,47 @@ def mse(p,t): # p=prediction, t=target
     return numpy.mean(1/2*(p-t)**2)
 
 def diffErr(net,x,p,t):
-    # e = (y-t)**2
+    # e = 1/2* (y-t)**2
     # y = w*x+b
-    # de/dw = de/dy*dy/dw = 2*(y-t) * x
+    # de/dw = de/dy*dy/dw = (y-t) * x
     delta_wi = (p-t)*x
     avg_dw = numpy.mean(delta_wi, axis=1) # mean over rows (=num of inputs)
     delta_bi = (p-t)
     avg_db = numpy.mean(delta_bi) # mean all biases
     return numpy.array([avg_dw, avg_db], dtype=object)
-    # return numpy.array([delta_wi, delta_bi], dtype=object)
 
 def train(NN,x,t,epochs):
-    lr = 0.001
+    lr = 0.01
     for epoch in range(epochs):
         # give multiple inputs as x = numpy.array([x1,x2,...],dtype=object)
         p = NN.pred(x) # make predictions
         e = mse(p,t)
         grad_w, grad_b = diffErr(NN,x,p,t)
-        print(f"Epoch {epoch} | Error: {e} with weights {NN._weights} and bias {NN._bias}")
+        print(f"Epoch {epoch+1} | Error: {e} with weights {NN._weights} and bias {NN._bias}")
         print(f"grad_w: {grad_w} --- grad_b: {grad_b}")
         # update weights and bias
         NN._weights += lr*(-grad_w)
         NN._bias += lr*(-grad_b)
-        # for i in range(x.shape[1]):
-        #
-        #     NN._weights += lr*(-grad_w[:,i])
-        #     NN._bias += lr*(-grad_b[i])
+
 
 # # -----------------------------------------------------------------------------
 # # intialization
 #
 NN = FelixNet(2)
 print(f"Initial weights: {NN.wb[0]} | initial bias: {NN.wb[1]}")
-x1 = numpy.arange(0, 10, 0.5) # input values
-x2 = numpy.arange(10, 0, -0.5) # input values
-x = numpy.array([x1,x2])
-t = 5*x1 + 3*x2 + 2 # target values
-p = NN.pred(x)
-print(f"Predictions {p} for targets {t} were made.")
-print(f"The error MSE is: {mse(p,t)}")
-
-print(f"input shape is {x.shape}")
-print(f"weights shape is {NN._weights.shape} and bias shape is {NN._bias.shape}")
-p = NN.pred(x)
-
-# print(type(numpy.array(x1[2],x2[2])))
-print(80*"-")
-dwb = diffErr(NN,x,p,t)
-print(numpy.shape(dwb[0]),numpy.shape(dwb[1]))
-print(dwb[0],dwb[1])
+# make a grid
+xnew1 = numpy.linspace(0,5,21)
+xnew2 = numpy.linspace(0,5,21)
+xv,yv = numpy.meshgrid(xnew1,xnew2)
+# evaluate a linear function on that grid
+tnew = 5*xv + 3*yv +2
+# transform data into 1-d arrays
+x1 = numpy.reshape(xv, len(xv)**2)
+x2 = numpy.reshape(yv, len(yv)**2)
+input = numpy.array([x1,x2])
+t = numpy.reshape(tnew, len(tnew)**2)
 
 print(80*"-")
 print("Training process started!\n")
-print(x.shape[1])
-train(NN,x,t,5000)
-# h = 0.02 # learning rate
-# epochs = 400
+
+train(NN,input,t,1000)
