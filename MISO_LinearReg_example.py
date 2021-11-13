@@ -69,7 +69,7 @@ xnew1 = numpy.linspace(0,5,21)
 xnew2 = numpy.linspace(0,5,21)
 xv,yv = numpy.meshgrid(xnew1,xnew2)
 # evaluate a linear function on that grid
-tnew = 5*xv + 3*yv +2
+tnew = 7*xv + 2*yv + 4
 
 # transform data into 1-d arrays
 x1 = numpy.reshape(xv, len(xv)**2)
