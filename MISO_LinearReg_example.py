@@ -48,6 +48,7 @@ def train(NN,x,t,epochs):
         e = mse(p,t)
         grad_w, grad_b = diffErr(NN,x,p,t)
         print(f"Epoch {epoch} | Error: {e} with weights {NN._weights} and bias {NN._bias}")
+        print(f"grad_w: {grad_w} --- grad_b: {grad_b}")
         # update weights and bias
         NN._weights += lr*(-grad_w)
         NN._bias += lr*(-grad_b)
@@ -62,7 +63,7 @@ def train(NN,x,t,epochs):
 NN = FelixNet(2)
 print(f"Initial weights: {NN.wb[0]} | initial bias: {NN.wb[1]}")
 x1 = numpy.arange(0, 10, 0.5) # input values
-x2 = numpy.arange(1, 11, 0.5) # input values
+x2 = numpy.arange(10, 0, -0.5) # input values
 x = numpy.array([x1,x2])
 t = 5*x1 + 3*x2 + 2 # target values
 p = NN.pred(x)
@@ -82,6 +83,6 @@ print(dwb[0],dwb[1])
 print(80*"-")
 print("Training process started!\n")
 print(x.shape[1])
-train(NN,x,t,1000)
+train(NN,x,t,5000)
 # h = 0.02 # learning rate
 # epochs = 400
