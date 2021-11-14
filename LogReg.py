@@ -12,7 +12,7 @@ class FelixLog:
         self._numinputs = n
         #self._weights = numpy.random.rand(n)
         self._weights = numpy.zeros(n)
-        self._bias = numpy.random.rand(1)
+        self._bias = 0 # or = numpy.random.rand(1)
         self._lam = 0.001 # lambda parameter for regularization
 
     @property
@@ -45,7 +45,7 @@ def sigmoid(z):
     return 1/(1+numpy.exp(-z))
 
 def calcgrad(net,x,p,t): # same update rule as in linear regression
-    delta_wi = numpy.matmul((p-t),x) + net._lam*net._weights
+    delta_wi = 1/len(p) * (numpy.mean(numpy.matmul((p-t),x)) + net._lam*net._weights)
     delta_bi = numpy.mean(p-t)
 
     return numpy.array([delta_wi, delta_bi], dtype=object)
@@ -57,7 +57,7 @@ def train(NN,x,t,epochs):
         p = NN.pred(x) # make predictions
         e = logloss(NN,p,t)
         grad_w, grad_b = calcgrad(NN,x,p,t)
-        if (epoch+1)%10 == 0:
+        if (epoch+1)%100 == 0:
             print(f"Epoch {epoch+1} | Error: {e} with weights {NN._weights} and bias {NN._bias}")
             print(f"grad_w: {grad_w} --- grad_b: {grad_b}")
         # update weights and bias
@@ -84,8 +84,13 @@ def train(NN,x,t,epochs):
 
 NN = FelixLog(3)
 
-# p = NN.pred(x_logregdata[:,:10])
+# p = NN.pred(x_logregdata[:3,:])
+# t = y_logregdata[:3]
+# print(x_logregdata[:3,:])
 # print(p)
+# print(t)
+# print(1/len(p)*numpy.matmul((p-t),x_logregdata[:3,:]))
+# print(0.5*0.741865 + 0.5*-1.80076 - 0.5*1.0328198)
 # # -----------------------------------------------------------------------------
 # # training process
 print(80*"--")
