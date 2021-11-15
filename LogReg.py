@@ -32,7 +32,8 @@ def sigmoid(z):
     return 1/(1+numpy.exp(-z))
 
 def calcgrad(net,x,p,t): # same update rule as in linear regression
-    delta_wi = 1/len(p) * (numpy.mean(numpy.dot((p-t),x)) + net._lam*net._weights)
+    #delta_wi = (numpy.mean(numpy.dot((p-t),x)) + net._lam*net._weights)
+    delta_wi = (numpy.dot(x.T,(p-t)) + net._lam*net._weights)/len(p)
     delta_bi = numpy.mean(p-t)
 
     return numpy.array([delta_wi, delta_bi], dtype=object)
