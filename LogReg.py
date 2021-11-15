@@ -16,13 +16,14 @@ class MyLogReg:
 
     def pred(self, x):
 
-        return sigmoid(numpy.dot(x, self._weights) + self._bias)
+        return sigmoid(numpy.matmul(x, self._weights) + self._bias)
 
 # -----------------------------------------------------------------------------
 # functions
 
-def logloss(net,p,t): # p=prediction, t=target
-    logloss_term = numpy.mean(-t*numpy.log(p)-(1-t)*numpy.log(1-p))
+def logloss(net,x,y): # p=prediction, t=target
+    p = sigmoid(numpy.matmul(x, net._weights) + net._bias) # (1000,3)x(3,1) becomes (1000,1)
+    logloss_term = (numpy.matmul(-y.T, numpy.log(p)) - numpy.matmul((1-y.T),numpy.log(1-p)))/len(p) # transpose, so (1,1000)x(1000,1) becomes (1)
     regularization_term = numpy.mean(net._weights**2 * net._lam/2)
     J = logloss_term + regularization_term
     return J
@@ -31,19 +32,21 @@ def sigmoid(z):
     # z = b + w1x1 + w2x2 + ... + wnxn
     return 1/(1+numpy.exp(-z))
 
-def calcgrad(net,x,p,t): # same update rule as in linear regression
-    #delta_wi = (numpy.mean(numpy.dot((p-t),x)) + net._lam*net._weights)
-    delta_wi = (numpy.dot(x.T,(p-t)) + net._lam*net._weights)/len(p)
-    delta_bi = numpy.mean(p-t)
+def gradient_Descent(LogRegObject, lr, x, y):
+    m = x.shape[0]
+    p = sigmoid(numpy.matmul(x, LogRegObject._weights))
+    grad = numpy.matmul(x.T, (p-y))/m
+    LogRegObject._weights -= lr * grad
+    LogRegObject._bias -= lr*numpy.mean(p-y)
+    return LogRegObject._weights
 
-    return numpy.array([delta_wi, delta_bi], dtype=object)
-
-def train(NN,x,t,epochs,lr):
+def train(net,x,t,epochs,lr):
     for epoch in range(epochs):
         # x comes in the shape of {n_samples, n_features}
-        p = NN.pred(x) # make predictions
-        e = logloss(NN,p,t)
-        grad_w, grad_b = calcgrad(NN,x,p,t)
+        p = net.pred(x) # make predictions
+        e = logloss(net,x,t)
+        grad_w = (numpy.dot(x.T,(p-t)) + net._lam*net._weights)/len(p)
+        grad_b = delta_bi = numpy.mean(p-t)
         if (epoch+1)%100 == 0:
             print(f"Epoch {epoch+1} | Error: {e} with weights {NN._weights} and bias {NN._bias}")
             print(f"grad_w: {grad_w} --- grad_b: {grad_b}")
@@ -71,16 +74,34 @@ def train(NN,x,t,epochs,lr):
 
 NN = MyLogReg(3)
 
+n_iterations = 500
+learning_rate = 0.5
+
+# for i in range(n_iterations):
+#     Theta = gradient_Descent(NN, learning_rate, x_logregdata, y_logregdata)
+#     if i % 50 == 0:
+#         print(logloss(NN, x_logregdata, y_logregdata))
+
+# NN._weights = Theta
+# print(NN._weights, NN._bias)
+# print(NN.pred(x_logregdata[:5,:]), y_logregdata[:5])
+
 # # -----------------------------------------------------------------------------
 # # training process
 print(80*"--")
 print("Training process started!\n")
 train(NN, x_logregdata, y_logregdata, 1000, 0.1)
-#
+# print(numpy.shape(x_logregdata))
+# print(numpy.matmul(x_logregdata, NN._weights))
 # # test against test_data
 # print(80*"--")
-
-p = NN.pred(x_logregdata[:5,:])
-t = y_logregdata[:5]
-print(p)
-print(t)
+# x = x_logregdata[:5,:]
+# p = NN.pred(x)
+# t = y_logregdata[:5]
+# print(p,t)
+# delta_wi = (numpy.matmul(x.T,(p-t)))/len(p)
+# print(delta_wi)
+# print(numpy.shape(p-t))
+# print(numpy.shape(x.T))
+# print(numpy.shape(x_logregdata))
+# print(numpy.shape(NN._weights))
