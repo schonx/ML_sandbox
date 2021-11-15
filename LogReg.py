@@ -6,30 +6,17 @@ path = r"C:\Users\felix\sciebo2\Atom_working_dir\ML_sandbox\\" # put in global p
 x_logregdata = numpy.genfromtxt(path+"x_logregdata.csv", delimiter=",")
 y_logregdata = numpy.genfromtxt(path+"y_logregdata.csv", delimiter=",")
 
-class FelixLog:
+class MyLogReg:
 
     def __init__(self, n):
         self._numinputs = n
-        #self._weights = numpy.random.rand(n)
-        self._weights = numpy.zeros(n)
+        self._weights = numpy.random.rand(n)
         self._bias = 0 # or = numpy.random.rand(1)
         self._lam = 0.001 # lambda parameter for regularization
 
-    @property
-    def wb(self): # getter fun
-        return (self._weights, self._bias)
-
-    @wb.setter
-    def wb(self, weights, bias): # setter fun
-        try:
-            self._weights[:] = weights
-            self._bias = bias
-        except Exception as e:
-            raise
-
     def pred(self, x):
 
-        return sigmoid(numpy.matmul(x, self._weights) + self._bias)
+        return sigmoid(numpy.dot(x, self._weights) + self._bias)
 
 # -----------------------------------------------------------------------------
 # functions
@@ -45,15 +32,14 @@ def sigmoid(z):
     return 1/(1+numpy.exp(-z))
 
 def calcgrad(net,x,p,t): # same update rule as in linear regression
-    delta_wi = 1/len(p) * (numpy.mean(numpy.matmul((p-t),x)) + net._lam*net._weights)
+    delta_wi = 1/len(p) * (numpy.mean(numpy.dot((p-t),x)) + net._lam*net._weights)
     delta_bi = numpy.mean(p-t)
 
     return numpy.array([delta_wi, delta_bi], dtype=object)
 
-def train(NN,x,t,epochs):
-    lr = 0.0001
+def train(NN,x,t,epochs,lr):
     for epoch in range(epochs):
-        # give multiple inputs as x = numpy.array([x1,x2,...],dtype=object)
+        # x comes in the shape of {n_samples, n_features}
         p = NN.pred(x) # make predictions
         e = logloss(NN,p,t)
         grad_w, grad_b = calcgrad(NN,x,p,t)
@@ -66,7 +52,7 @@ def train(NN,x,t,epochs):
 
 # -----------------------------------------------------------------------------
 # DEPRECATED
-# data stolen from https://datatofish.com/logistic-regression-python/
+# data from https://datatofish.com/logistic-regression-python/
 # helpful: https://towardsdatascience.com/implement-logistic-regression-with-l2-regularization-from-scratch-in-python-20bd4ee88a59
 
 # candidates = {'gmat': [780,750,690,710,680,730,690,720,740,690,610,690,710,680,770,610,580,650,540,590,620,600,550,550,570,670,660,580,650,660,640,620,660,660,680,650,670,580,590,690],
@@ -82,21 +68,18 @@ def train(NN,x,t,epochs):
 # -----------------------------------------------------------------------------
 
 
-NN = FelixLog(3)
+NN = MyLogReg(3)
 
-# p = NN.pred(x_logregdata[:3,:])
-# t = y_logregdata[:3]
-# print(x_logregdata[:3,:])
-# print(p)
-# print(t)
-# print(1/len(p)*numpy.matmul((p-t),x_logregdata[:3,:]))
-# print(0.5*0.741865 + 0.5*-1.80076 - 0.5*1.0328198)
 # # -----------------------------------------------------------------------------
 # # training process
 print(80*"--")
 print("Training process started!\n")
-train(NN, x_logregdata, y_logregdata, 1000)
+train(NN, x_logregdata, y_logregdata, 1000, 0.1)
 #
 # # test against test_data
 # print(80*"--")
-# print("Evaluation on test data:\n")
+
+p = NN.pred(x_logregdata[:5,:])
+t = y_logregdata[:5]
+print(p)
+print(t)
