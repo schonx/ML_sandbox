@@ -1,10 +1,11 @@
 import numpy
 import math
-# Test
-data_version = "1k" # "1k" or "100"
+
+data_version = "100" # "1k" or "100"
 
 # import data
 path = r"C:\Users\felix\sciebo2\Atom_working_dir\ML_sandbox\\" # put in global path here
+path = r"/home/schoenig/Documents/Atom_working_dir/ML_sandbox//" # linux path
 x_logregdata = numpy.genfromtxt(path+"x_logregdata"+data_version+".csv", delimiter=",")
 y_logregdata = numpy.genfromtxt(path+"y_logregdata"+data_version+".csv", delimiter=",")
 
