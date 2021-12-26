@@ -10,7 +10,7 @@ x_logregdata = numpy.genfromtxt(path+"x_logregdata"+data_version+".csv", delimit
 y_logregdata = numpy.genfromtxt(path+"y_logregdata"+data_version+".csv", delimiter=",")
 
 class MyLogReg:
-
+# the class is not really needed
     def __init__(self, n):
         self._numinputs = n
         self._weights = numpy.repeat(1.0,n)
