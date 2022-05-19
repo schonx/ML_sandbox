@@ -9,3 +9,6 @@ https://juliaacademy.com/courses/
 
 finish course from "Training Neural Nets" on:
 https://developers.google.com/machine-learning/crash-course/training-neural-networks/video-lecture
+
+# code an MLP with bp:
+https://towardsdatascience.com/gradient-descent-show-me-the-math-7ba7d1caef09
